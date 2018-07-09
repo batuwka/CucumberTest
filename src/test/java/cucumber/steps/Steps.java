@@ -11,6 +11,7 @@ import org.junit.Assert;
 
 import static io.restassured.RestAssured.get;
 import static io.restassured.RestAssured.given;
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.Matchers.equalTo;
 
 public class Steps{
@@ -32,7 +33,7 @@ public class Steps{
     }
 
     @Then("^I should see \"([^\"]*)\" status code$")
-    public void iShouldSeeStatusCode(String arg0) {
+    public void iShouldSeeStatusCode(Integer arg0) {
         RestAssured.baseURI = "https://api.github.com/";
         RequestSpecification httpReq = RestAssured.given();
         Response response = httpReq.get("users/batuwka");
@@ -48,6 +49,7 @@ public class Steps{
         System.out.println("");
 //        InputStream xsd = Thread.currentThread().getContextClassLoader().getResourceAsStream("schemas/mainPage.xsd");
 //        when().get(RestAssured.baseURI + "/complete").then().statusCode(Integer.parseInt(arg0)).body(matchesXsd(xsd));
-        get("users/batuwka").then().body("public_gists", equalTo(1));
+        get("users/batuwka").then().statusCode(arg0).body("public_gists", equalTo(0));
+        get("users/batuwka").then().assertThat().body(matchesJsonSchemaInClasspath("schemas/schema.json"));
     }
 }
